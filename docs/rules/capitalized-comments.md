@@ -126,7 +126,7 @@ Here are the supported options:
 * `ignorePattern`: A string representing a regular expression pattern of words that should be ignored by this rule. If the first word of a comment matches the pattern, this rule will not report that comment.
     * Note that the following words are always ignored by this rule: `["jscs", "jshint", "eslint", "istanbul", "global", "globals", "exported"]`.
 * `ignoreInlineComments`: If this is `true`, the rule will not report on comments in the middle of code. By default, this is `false`.
-* `overrides`: An object allowing each of the previous options to be overridden at the `line` or `block` comment level.
+* `tolerateConsecutiveComments`: If this is `true`, the rule will not report on a comment which violates the rule, as long as the comment immediately follows a comment which is also not reported.
 
 Here is an example object-based configuration:
 
@@ -182,6 +182,22 @@ Examples of **correct** code with the `"ignoreInlineComments"` option set to `tr
 function foo(/* ignored */ a) {
 }
 
+```
+
+Examples of **correct** code with `tolerateConsecutiveComments` set to `true`:
+
+```js
+/* eslint capitalize-comments: ["error", { "capitalize": "always", "tolerateConsecutiveComments": true }] */
+
+// This comment is valid since it has the correct capitalization,
+// and so is this one because it immediately follows a valid comment,
+// and this one as well because it follows the previous valid comment.
+
+/* Here is a block comment which has the correct capitalization, */
+/* and this one is valid as well; */
+/*
+ * in fact, even if any of these are multi-line, that is fine too.
+ */
 ```
 
 Examples of **incorrect** code with different line and block comment configuration:

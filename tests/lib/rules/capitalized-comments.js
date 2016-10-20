@@ -250,6 +250,45 @@ ruleTester.run("capitalized-comments", rule, {
             options: [{ capitalize: "never", ignoreInlineComments: true }]
         },
 
+        // Tolerating consecutive comments
+        {
+            code: [
+                "// This comment is valid since it is capitalized,",
+                "// and this one is valid since it follows a valid one,",
+                "// and same with this one."
+            ].join("\n"),
+            options: [{ capitalize: "always", tolerateConsecutiveComments: true }]
+        },
+        {
+            code: [
+                "/* This comment is valid since it is capitalized, */",
+                "/* and this one is valid since it follows a valid one, */",
+                "/* and same with this one. */"
+            ].join("\n"),
+            options: [{ capitalize: "always", tolerateConsecutiveComments: true }]
+        },
+        {
+            code: [
+                "/*",
+                " * This comment is valid since it is capitalized,",
+                " */",
+                "/* and this one is valid since it follows a valid one, */",
+                "/*",
+                " * and same with this one.",
+                " */"
+            ].join("\n"),
+            options: [{ capitalize: "always", tolerateConsecutiveComments: true }]
+        },
+        {
+            code: [
+                "// This comment is valid since it is capitalized,",
+                "// and this one is valid since it follows a valid one,",
+                "foo();",
+                "// This comment now has to be capitalized."
+            ].join("\n"),
+            options: [{ capitalize: "always", tolerateConsecutiveComments: true }]
+        },
+
         // Comments which start with URLs should always be valid
         {
             code: "// https://github.com",
@@ -888,6 +927,36 @@ ruleTester.run("capitalized-comments", rule, {
             errors: [{
                 message: NEVER_MESSAGE,
                 line: 1,
+                column: 1
+            }]
+        },
+
+        // tolerateConsecutiveComments only applies to comments with no tokens between them
+        {
+            code: [
+                "// This comment is valid since it is capitalized,",
+                "// and this one is valid since it follows a valid one,",
+                "foo();",
+                "// this comment is now invalid."
+            ].join("\n"),
+            options: [{ capitalize: "always", tolerateConsecutiveComments: true }],
+            errors: [{
+                message: ALWAYS_MESSAGE,
+                line: 4,
+                column: 1
+            }]
+        },
+
+        // Consecutive comments should warn if tolerateConsecutiveComments:false
+        {
+            code: [
+                "// This comment is valid since it is capitalized,",
+                "// but this one is invalid even if it follows a valid one.",
+            ].join("\n"),
+            options: [{ capitalize: "always", tolerateConsecutiveComments: false }],
+            errors: [{
+                message: ALWAYS_MESSAGE,
+                line: 2,
                 column: 1
             }]
         },
