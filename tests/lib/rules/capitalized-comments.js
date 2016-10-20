@@ -258,6 +258,26 @@ ruleTester.run("capitalized-comments", rule, {
         {
             code: "// HTTPS://GITHUB.COM",
             options: ["never"]
+        },
+
+        // Using different options for line/block comments
+        {
+            code: [
+                "// Valid capitalized line comment",
+                "/* valid lowercase block comment */",
+                "// lineCommentIgnorePattern",
+                "/* BlockCommentIgnorePattern */"
+            ].join("\n"),
+            options: [{
+                line: {
+                    capitalize: "always",
+                    ignorePattern: "lineCommentIgnorePattern"
+                },
+                block: {
+                    capitalize: "never",
+                    ignorePattern: "BlockCommentIgnorePattern"
+                }
+            }]
         }
     ],
 
@@ -891,5 +911,33 @@ ruleTester.run("capitalized-comments", rule, {
                 column: 1
             }]
         },
+
+        // Using different options for line/block comments
+        {
+            code: [
+                "// Valid capitalized line comment",
+                "/* valid lowercase block comment */",
+            ].join("\n"),
+            options: [{
+                line: {
+                    capitalize: "never"
+                },
+                block: {
+                    capitalize: "always"
+                }
+            }],
+            errors: [
+                {
+                    message: NEVER_MESSAGE,
+                    line: 1,
+                    column: 1
+                },
+                {
+                    message: ALWAYS_MESSAGE,
+                    line: 2,
+                    column: 1
+                }
+            ]
+        }
     ]
 });
