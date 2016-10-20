@@ -212,6 +212,24 @@ ruleTester.run("capitalized-comments", rule, {
             options: [{ capitalize: "never" }]
         },
 
+        // If first word in comment matches ignorePattern, don't warn
+        {
+            code: "// matching",
+            options: [{ capitalize: "always", ignorePattern: "match" }]
+        },
+        {
+            code: "// Matching",
+            options: [{ capitalize: "never", ignorePattern: "Match" }]
+        },
+        {
+            code: "// bar",
+            options: [{ capitalize: "always", ignorePattern: "foo|bar" }]
+        },
+        {
+            code: "// Bar",
+            options: [{ capitalize: "never", ignorePattern: "Foo|Bar" }]
+        },
+
         // Inline comments are not warned if ignoreInlineComments: true
         {
             code: "foo(/* ignored */ a);",
@@ -834,7 +852,27 @@ ruleTester.run("capitalized-comments", rule, {
             }]
         },
 
-        // Comments don't get a pass if URL is not at the start of the comment
+        // Comments which do not match ignorePattern are still warned
+        {
+            code: "// not matching",
+            options: [{ capitalize: "always", ignorePattern: "ignored?" }],
+            errors: [{
+                message: ALWAYS_MESSAGE,
+                line: 1,
+                column: 1
+            }]
+        },
+        {
+            code: "// Not matching",
+            options: [{ capitalize: "never", ignorePattern: "ignored?" }],
+            errors: [{
+                message: NEVER_MESSAGE,
+                line: 1,
+                column: 1
+            }]
+        },
+
+        // Comments are warned if URL is not at the start of the comment
         {
             code: "// should fail. https://github.com",
             options: ["always"],
